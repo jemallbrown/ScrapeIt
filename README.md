@@ -1,2 +1,0 @@
-# ScrapeIt
-Homework 18
