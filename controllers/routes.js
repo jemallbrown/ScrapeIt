@@ -11,12 +11,9 @@ var db = require("../models")
 // Routes
 
 app.get("/", function(req, res){
-    res.sendFile(path.join(__dirname, "../public/html/index.html"));
+    res.sendFile(path.join(__dirname, "../public/index.html"));
 });
 
-app.get("/saved", function(req, res){
-    res.sendFile(path.join(__dirname, "../public/html/saved.html"));
-});
   
   app.get("/all", function(req, res) {
     // Find all results from the scrapedData collection in the db
@@ -97,14 +94,15 @@ app.get("/saved", function(req, res){
       });
   });
 
-  app.put("/save-article/:articleId", function(req, res) {
+  app.put("/savearticle/:articleId", function(req, res) {
+    console.log(req.body)
     db.Article.findByIdAndUpdate(req.params.articleId, {    $set: { saved: true }
     }).then(function(data) {
         res.json(data);
     });
 });
 
-app.get("/display-saved/", function(req, res) {
+app.get("/displaysaved/", function(req, res) {
     db.Article.find( 
         { saved: true }
     ).then(function(data) {
@@ -120,16 +118,19 @@ app.put("/delete-from-saved/:articleId", function(req, res) {
 });
 
 app.delete("/delete-note/:noteId", function (req, res) {
-    db.Note.findByIdAndRemove(req.params.noteId, (err, note) => {
-        if (err) return res.status(500).send(err);
-        return res.status(200).send();
-    });
+  db.Note.findByIdAndRemove(req.params.noteId, (err, note) => {
+      if (err) return res.status(500).send(err);
+      return res.status(200).send();
+  });
 
 });
-
+app.delete("/clearAllArticles", function (req, res) {
+    db.articles.drop({})
+    });
 
   // Route for saving/updating an Article's associated Note
   app.post("/articles/:id", function(req, res) {
+    console.log("inside post method for saving articles and sending ", req.body)
     // Create a new note and pass the req.body to the entry
     db.Note.create(req.body)
       .then(function(dbNote) {
